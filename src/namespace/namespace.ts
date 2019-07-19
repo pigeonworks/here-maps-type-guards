@@ -754,6 +754,19 @@ export declare namespace H {
                 READY,
             }
         }
+
+        namespace kml {
+            /**
+             * KML Reader class responsible for fetching and interpreting KML data
+            */
+            class Reader extends AbstractReader {
+                /**
+                 * Constructor
+                 * @param url {string} - URL from which to get the KML data
+                 */
+                constructor(url: string);
+            }
+        }
     }
 
     /***** geo *****/
@@ -1094,6 +1107,72 @@ export declare namespace H {
              * @return {H.geo.Rect} - the bounding rectangle of the geometry or null if the bounding rectangle can't be computed (e.g. for a geometry without coordinates)
              */
             getBounds(): H.geo.Rect;
+
+            /**
+             * Checks whether the geometry is equal to the geometry supplied by the caller.
+             * Two geometries are considered as equal if they represent the same geometry type and have equal coordinate values.
+             * @param other {any} - The geometry to check against
+             * @return {boolean} - true if the two geometries are equal, otherwise false
+             */
+            equals(other: any): boolean;
+
+            /**
+             * To obtain a Well-Known-Text (WKT) representation of the geometry.
+             * @return {string} - the resulting WKT string
+             */
+            toString(): string;
+        }
+
+        class MultiPoint extends H.geo.MultiGeometry<H.geo.Point> {
+            /**
+             * A MultiPoint is a collection of points represented as a H.geo.MultiGeometry with a H.geo.Point as generic type parameter T.
+             * @param lineStrings {H.geo.Point[]} - The list of points which are initially represented by the MultiPoint.
+             * @throws {H.lang.InvalidArgumentError} - if the lineStrings argument is not valid
+             */
+            constructor(points: H.geo.Point[]);
+
+            /**
+             * This method splices the specified MultiGeometry at the provided index, removing the specified number of items at that index and inserting new items.
+             * @param index {number} - The index at which to start changing the list.
+             * @param opt_deleteCount {number?} - The number of geometries to remove.
+             * @param opt_items {H.geo.Point[]?} - The geometries to add.
+             * @return {H.geo.LinPointeString[]} - the removed geometries
+             */
+            splice(index: number, opt_deleteCount?: number, opt_items?: H.geo.Point[]): H.geo.Point[];
+
+            /**
+             * Removes a contained geometry at the given index.
+             * @param index {number} - The index of the geometry to remove.
+             * @return {H.geo.Point} - the removed geometry.
+             * @throws {H.lang.OutOfRangeError} - if no geometry exists at the given index.
+             */
+            removeAt(index: number): H.geo.Point;
+
+            /**
+             * Removes the specified geometry from the multi-geometry
+             * @param geometry {H.geo.Point} -The geometry (by reference) to remove from this multi-geometry
+             * @return {H.geo.Point} -the removed geometry or null if the geometry was not found
+             */
+            remove(geometry: H.geo.Point): H.geo.Point;
+
+            /**
+             * Returns the aggregated geometries of the multi-geometry. The returned geometries must be treated as read-only to not violate the integrity of the multi-geometry.
+             * @return {H.geo.Point[]} - An array of geometries
+             */
+            getGeometries(): H.geo.Point[];
+
+            /**
+             * Adds the specified geometry to the current multi-geometry.
+             * @param geometry {H.geo.Point} - A geometry which will be added to the current multi-geometry
+             * @throws {H.lang.InvalidArgumentError} - in case of invalid geometry argument
+             */
+            push(geometry: H.geo.Point): void;
+
+            /**
+             * Returns the bounding rectangle of the geometry.
+             * @return {H.geo.Rect} - the bounding rectangle of the geometry or null if the bounding rectangle can't be computed (e.g. for a geometry without coordinates)
+             */
+            getBoundingBox(): H.geo.Rect;
 
             /**
              * Checks whether the geometry is equal to the geometry supplied by the caller.
@@ -1610,6 +1689,12 @@ export declare namespace H {
              * @param opt_options {H.map.AbstractMarker.Options=} - The values to initialize this marker
              */
             constructor(position: H.geo.IPoint, opt_options?: H.map.AbstractMarker.Options);
+
+             /**
+             * This method returns the marker's current geometry
+             * @returns {(H.geo.Point | H.geo.MultiPoint)}
+             */
+            getGeometry(): H.geo.Point //| H.geo.MultiPoint
 
             /**
              * This method returns this marker's current position.
